@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) == null)
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragmentContainerView, DieFragment())
+                .add(R.id.fragmentContainerView, DieFragment.newInstance(20))
                 .commit()
 
         findViewById<Button>(R.id.rollDiceButton).setOnClickListener {
