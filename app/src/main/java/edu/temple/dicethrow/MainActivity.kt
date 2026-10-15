@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), DieFragment.DieRollInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,6 +28,13 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.fragmentContainerView, DieFragment.newInstance(20))
                 .commit()
 
+        findViewById<Button>(R.id.rollDiceButton).setOnClickListener {
+            val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as? DieFragment
+            fragment?.throwDie()
+        }
+    }
+
+    override fun rollDice() {
         findViewById<Button>(R.id.rollDiceButton).setOnClickListener {
             val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as? DieFragment
             fragment?.throwDie()

@@ -7,16 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import kotlin.random.Random
-
+import androidx.lifecycle.ViewModelProvider
 const val DIESIDE = "sidenumber"
 
 class DieFragment : Fragment() {
+
+    // accessing view model via lazy instantiation
+    // lazy holds on to what the dieViewModels getter function returns
+    val dieViewModel : DieViewModel by lazy {
+        ViewModelProvider(this).get(DieViewModel::class.java)
+    }
 
 
     lateinit var dieTextView: TextView
 
     var dieSides: Int = 6
-    var currRoll: Int = 0
+    // var currRoll: Int = 0
     val CURR_ROLL = "currRoll"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,11 +33,11 @@ class DieFragment : Fragment() {
             }
         }
 
-        savedInstanceState?.let {
-            it.getInt(CURR_ROLL).run {
-                currRoll = this
-            }
-        }
+//        savedInstanceState?.let {
+//            it.getInt(CURR_ROLL).run {
+//                currRoll = this
+//            }
+//        }
 
     }
 
@@ -47,28 +53,33 @@ class DieFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (currRoll == 0) {
-            throwDie()
-        } else {
-            dieTextView.text = currRoll.toString()
+//        if (currRoll == 0) {
+//            throwDie()
+//        } else {
+//            dieTextView.text = currRoll.toString()
+//        }
+
+        // create observer instead, something to observe changes in the live data
+        dieViewModel.getRoll().observe(viewLifecycleOwner) { rollValue ->
+            dieTextView.text = rollValue.toString()
         }
 
         view.setOnClickListener{
-            throwDie()
+            (requireActivity() as DieRollInterface).rollDice()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putInt(CURR_ROLL, currRoll)
+        // outState.putInt(CURR_ROLL, currRoll)
 
     }
 
     // no zeros in die roll
     fun throwDie() {
-        currRoll = (Random.nextInt(dieSides) + 1)
-        dieTextView.text = currRoll.toString()
+        dieViewModel.setRoll(Random.nextInt(dieSides) + 1)
+//      dieTextView.text = currRoll.toString()
     }
 
     companion object {
@@ -77,5 +88,9 @@ class DieFragment : Fragment() {
                 putInt(DIESIDE, sides)
             }
         }
+    }
+
+    interface DieRollInterface {
+        fun rollDice()
     }
 }
